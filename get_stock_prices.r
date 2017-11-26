@@ -32,10 +32,11 @@ stock_prices <- foreach(ticker = universe, .combine = rbind, .packages='quantmod
   }, error = function(e) {})
 }
 
+stock_prices <- stock_prices[!is.na(row.names(stock_prices)), ]
 stopCluster(cl)
 
 # write to database
 print('Writing to database')
 con <- dbConnect(RSQLite::SQLite(), dbname = 'stock_prices.sqlite')
-dbWriteTable(con, 'stock_prices', stock_prices)
+dbWriteTable(con, 'stock_prices', stock_prices, overwrite = T, row.names = NA)
 dbDisconnect(con)
