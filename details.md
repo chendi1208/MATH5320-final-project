@@ -13,8 +13,9 @@ The risk calculation system should be able to:
 -  Compute Monte Carlo, historical, and parametric VaR.
 -  Backtest the computed VaRs against history.
 
-The requirements are intentionally vague. In practice you will be faced with extremely vague requirements specifications and you will need to exercise judgment as to the best way to reasonably fulfill the given requirements. The expectation is that the course is giving you the background necessary to make such judgment calls.
-It should be relatively easy with your system to take an arbitrary set of stocks and options as input and do the above calculations. One way of doing this is by creating a standardized input file format and writing software to read the input file and perform the requested calculations. This would be the only way to proceed if working in C++. If working in an interpreted langage (like matlab or R) one could alternatively provide the appropriate code so that these calculations can be done by writing small scripts.
+In practice you will be faced with extremely vague requirements specifications and you will need to exercise judgment as to the best way to reasonably fulfill the given requirements. The expectation is that the course is giving you the background necessary to make such judgment calls.
+
+It should be relatively easy with your system to take an arbitrary set of stocks and options as input and do the above calculations.  If working in an interpreted langage, one could alternatively provide the appropriate code so that these calculations can be done by writing small scripts.
 
 # 3 Deliverables
 
