@@ -1,22 +1,48 @@
-# 1 Data Transfomation
+## VaR Calculation System
 
-1. Request user to upload a `csv` including:
-   - Stocks and options chosen
-   - Invest amount for each position (sum = total position)
-   - Date invested (+ date withdrawal)
-2. Get shares, prices to form a portfolio
+```
+cal_system/
+    |
+    |---- dashboard/
+    |        |---- www/
+    |        |---- ui.R
+    |        |---- server.R
+    |---- run_app.R
+    |---- run_app.sh
+    |
+    |---- data/
+    |        |---- get_stock_prices.R
+    |        |---- stock_prices.sqlite
+    |
+    |---- model/
+    |        |---- xxx.R
+    |        |---- xxx.R
+    |        |---- xxx.R
+    |
+    |---- report/
+    |---- sample_input.csv
+    |---- README.md
+```
 
-This part are in `initial_data.R`
+#### run Shiny app
 
-# 2 Different Methods for VaR Calculation
+1. The user can use the bash file `run_app.sh` to run the Shiny application automatically. 
 
-1. Fuctions in seperate code module:
-   - `winEstGBM.R` - Estimates GBM parameters from history using windowed his-
-     tory (equal weighting).
-   - `expEstGBM.R` - Estimates GBM parameters from history using exponential
-     weighting.
-   - `gbmVaR.R` – Compute VaR assuming portfolio follows GBM.
-   - `gbmES.R` – Compute ES assuming portfolio follows GBM.
-   - `bmsampset.R` – Generates sample paths for specified BM.
-   - `gbmsampset.R` – Generates paths under GBM.
+   Change the path and ensure that `rscript` command is valid (see [here][rscript] for instruction)
 
+2. Altenatively, the user can go into the directory and source `run_app.R`
+
+#### user input
+
+Date invested and date withdrawal (**investment period**) are required in the app.
+
+A separate csv file containing portfolio information (**stock ticker** and **total dollar amount** invested in) with the following format is also required. The user can upload the file through the app. Tickers that do not have data will be ignored.
+
+| ticker   | amount |
+| -------- | ------ |
+| ticker_1 | xxx.xx |
+| ticker_2 | xxx.xx |
+| ticker_3 | xxx.xx |
+| …...     | …...   |
+
+[rscript]: https://github.com/andrewheiss/SublimeKnitr/issues/32
