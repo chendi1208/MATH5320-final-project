@@ -1,4 +1,4 @@
-## VaR Calculation System
+# VaR Calculation System
 
 ```
 cal_system/
@@ -24,15 +24,13 @@ cal_system/
     |---- README.md
 ```
 
-#### run Shiny app
+### run Shiny app
 
-1. The user can use the bash file `run_app.sh` to run the Shiny application automatically. 
-
-   Change the path and ensure that `rscript` command is valid (see [here][rscript] for instruction)
+1. The user can use the bash file `run_app.sh` to run the Shiny application automatically (Linux and Unix systems only). Change the path and ensure that `rscript` command is valid (see [here][rscript] for instruction)
 
 2. Altenatively, the user can go into the directory and source `run_app.R`
 
-#### user input
+### user input
 
 Date invested and date withdrawal (**investment period**) are required in the app.
 
