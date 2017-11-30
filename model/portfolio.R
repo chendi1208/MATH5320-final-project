@@ -4,10 +4,12 @@ library(dplyr)
 library(zoo)
 
 
-get_data <- function() {
-  con <- dbConnect(RSQLite::SQLite(), dbname = 'data/stock_prices.sqlite')
+get_all_prices <- function() {
+  print('Fetching all stock prices from database......')
+  con <- dbConnect(RSQLite::SQLite(), dbname = '../data/stock_prices.sqlite')
   stock_prices <- dbReadTable(con, 'stock_prices')
   dbDisconnect(con)
+  print('Data fetched!')
   return(stock_prices)
 }
 

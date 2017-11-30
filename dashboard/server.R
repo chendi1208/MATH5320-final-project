@@ -1,12 +1,13 @@
 # Dashboard Server
 library(ggplot2)
-library(reshape2)
 library(dygraphs)
-library(xts)
 
 
 # user defined modules
+source('../model/portfolio.R')
 source('../model/gbm.R')
+
+stock_prices <- get_all_prices()
 
 
 # server function
