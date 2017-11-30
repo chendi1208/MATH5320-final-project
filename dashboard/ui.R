@@ -10,9 +10,8 @@ shinyUI(dashboardPage(
     title = 'title',
     tags$li(
       class = 'dropdown',
-      tags$a(
-        href = 'mailto:xxx@columbia.edu, yyy@columbia.edu',
-        tags$img(src = 'mail.png', width = '18px')))
+      tags$a(href = 'mailto:xxx@columbia.edu, yyy@columbia.edu', icon('envelope'))
+    )
   ),
 
   # # # # # sidebar
@@ -36,5 +35,6 @@ shinyUI(dashboardPage(
   ),
 
   # # # # # main panel
-  dashboardBody(),
+  dashboardBody(
+    tableOutput('test')),
 ))
