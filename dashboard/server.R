@@ -6,7 +6,7 @@ library(xts)
 
 
 # user defined modules
-source('../model/gbmES.R')
+source('../model/gbm.R')
 
 
 # server function

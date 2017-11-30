@@ -6,8 +6,7 @@ library(RSQLite)
 library(foreach)
 library(doParallel)
 
-universe <- na.omit(stockSymbols())
-universe <- universe[(universe$IPOyear <= 2015) & (universe$Exchange != 'AMEX'), 'Symbol']
+universe <- stockSymbols()$Symbol
 
 # initialize parallel computation pool
 cores <- detectCores()
@@ -20,7 +19,7 @@ get_data <- function(ticker) {
   df <- as.data.frame(getSymbols(ticker, src = 'google', env = NULL))
   names(df) <- sapply(strsplit(names(df), '\\.'), '[[', 2)
   df$Ticker <- ticker
-  df$Date <- as.Date(row.names(df))
+  df$Date <- row.names(df)
   return(df)
 }
 

@@ -15,8 +15,8 @@ cal_system/
     |        |---- stock_prices.sqlite
     |
     |---- model/
-    |        |---- xxx.R
-    |        |---- xxx.R
+    |        |---- gbm.R
+    |        |---- portfolio.R
     |        |---- xxx.R
     |
     |---- report/

@@ -1,5 +1,3 @@
-# GBM functions module
-
 bm_sampling <- function(n_steps, dt, n_paths) {
   # generate BM samples
   # output matrix dimension: n_paths * (n_steps + 1)
