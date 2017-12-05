@@ -18,23 +18,31 @@ shinyUI(dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem('About', icon = icon('question-circle'),
-        menuItem('What', icon = icon('caret-right'), tabName = 'about-what'),
         menuItem('How', icon = icon('caret-right'), tabName = 'about-how'),
-        menuItem('Who', icon = icon('caret-right'), tabName = 'about-who',
-          menuItem('What', icon = icon('caret-right'), tabName = 'about-what'),
-          menuItem('What', icon = icon('caret-right'), tabName = 'about-what')))
+        menuItem('Who', icon = icon('caret-right'), tabName = 'about-who'))
     ),
     sidebarMenu(
       menuItem('About', icon = icon('question-circle'),
-        menuItem('What', icon = icon('caret-right'), tabName = 'about-what'),
-        menuItem('How', icon = icon('caret-right'), tabName = 'about-how'),
-        menuItem('Who', icon = icon('caret-right'), tabName = 'about-who',
-          menuItem('What', icon = icon('caret-right'), tabName = 'about-what'),
-          menuItem('What', icon = icon('caret-right'), tabName = 'about-what')))
+        menuItem('What', icon = icon('caret-right'), tabName = 'about-test'),
+        menuItem('How', icon = icon('caret-right'), tabName = 'about-test'),
+        menuItem('Who', icon = icon('caret-right'), tabName = 'about-test',
+          menuItem('What', icon = icon('caret-right'), tabName = 'about-test'),
+          menuItem('What', icon = icon('caret-right'), tabName = 'about-test')))
     )
   ),
 
   # # # # # main panel
-  dashboardBody(
-    tableOutput('test')),
+  dashboardBody(tabItems(
+    tabItem(tabName = 'about-how',
+      h1('Test how'),
+      dateRangeInput("dates", label = h4("Investment period")),
+      fileInput("file", label = h4("File input")),
+      submitButton(text = "Apply Changes"),
+      tableOutput('test')
+    ),
+
+    tabItem(tabName = 'about-who',
+      h1('Test who')
+    )
+  ))
 ))

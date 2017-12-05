@@ -13,8 +13,10 @@ stock_prices <- get_all_prices()
 # server function
 shinyServer(function(input, output) {
   output$test <- renderTable({
-    position <- data.frame(ticker = 'MCD', amount = 100)
-    date_range <- c(as.Date('2016-01-01'), as.Date('2017-01-31'))
+    print('Updating')
+    position <- read.csv(input$file$datapath)
+    # position <- data.frame(ticker = 'MCD', amount = 100)
+    date_range <- c(as.Date(input$dates[1]), as.Date(input$dates[2]))
     prices <- format_prices(stock_prices, position, date_range)
 
     # handle exception if no available data to form portfolio
