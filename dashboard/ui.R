@@ -15,7 +15,6 @@ shinyUI(dashboardPage(
 
   # # # # # sidebar
   dashboardSidebar(
-    hr(),
     sidebarMenu(id="tabs",
                 menuItem("Plot", tabName="plot", icon=icon("line-chart"), selected=TRUE),
                 menuItem("Table", tabName = "table", icon=icon("table")),
