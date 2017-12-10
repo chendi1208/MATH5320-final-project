@@ -5,3 +5,4 @@ then
 else
   cd /Users/doris/Documents/Columbia/Courseworks/MATH\ 5320\ Financial\ Risk\ Management\ and\ Regulation/project
 fi
+rscript run_app.R
