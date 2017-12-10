@@ -13,7 +13,7 @@
 
 
 cal_measure <- function(s0, price, windowLen, horizonDays, 
-  method, VaRp = 0.99, ESp = 0.975) {
+  method, measure, VaRp = 0.99, ESp = 0.975) {
   windowLenDays <- windowLen * 252
   horizon <- horizonDays / 252
 
@@ -61,38 +61,34 @@ cal_measure <- function(s0, price, windowLen, horizonDays,
   }
 
   # Choose method
-  if (method == "winestimate") {
+  if (method == "Parametric - equally weighted" & measure == "VaR") {
     parameter <- winEstGBM(price, windowLen)
-  } else if (method == "expestimate") {
+    return(s0 - s0 * exp(parameter$sigma * sqrt(horizon) * 
+    qnorm(1 - VaRp) + (parameter$mu - parameter$sigma^2/2) * horizon))
+  } else if (method == "Parametric - exponentially weighted" & measure == "VaR") {
     parameter <- expEstGBM(price, windowLen)
+    return(s0 - s0 * exp(parameter$sigma * sqrt(horizon) * 
+    qnorm(1 - VaRp) + (parameter$mu - parameter$sigma^2/2) * horizon))
   }
-
-
-
-
-
-  gbm <- s0 - s0 * exp(parameter$sigma * sqrt(horizon) * 
-    qnorm(1 - VaRp) + (parameter$mu - parameter$sigma^2/2) * horizon)
-  return(gbm)
 }
 
 
 
 
 
-historical_rel_VaR <- function(price,s0,windowLen,VaRp,horizonDays){
-  l <- length(price)
-  logreturn <- log(price[1:(l-horizonDays)]) - log(price[(1+horizonDays):l])
-  PortfolioRes <- s0*exp(logreturn)
-  l <- length(PortfolioRes)
-  loss <- s0 - PortfolioRes
-  VaR <- NULL
-  for (i in 1:(l-windowLenDays)){
-    VaR[i] <- quantile(loss[i:(i+windowLenDays)],VaRp)
-  }
-  return(VaR)
-}
-return(historical_rel_VaR(price,s0,windowLen,VaRp,horizonDays))
+# historical_rel_VaR <- function(price,s0,windowLen,VaRp,horizonDays){
+#   l <- length(price)
+#   logreturn <- log(price[1:(l-horizonDays)]) - log(price[(1+horizonDays):l])
+#   PortfolioRes <- s0*exp(logreturn)
+#   l <- length(PortfolioRes)
+#   loss <- s0 - PortfolioRes
+#   VaR <- NULL
+#   for (i in 1:(l-windowLenDays)){
+#     VaR[i] <- quantile(loss[i:(i+windowLenDays)],VaRp)
+#   }
+#   return(VaR)
+# }
+# return(historical_rel_VaR(price,s0,windowLen,VaRp,horizonDays))
 
 
 
