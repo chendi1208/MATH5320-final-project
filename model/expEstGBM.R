@@ -61,18 +61,24 @@ cal_measure <- function(s0, price, windowLen, horizonDays,
   }
 
   # Choose method
+  ## Parametric - equally weighted
   if (method == "Parametric - equally weighted") {
     parameter <- winEstGBM(price, windowLen)
     if (measure == "VaR") {
       var <- s0 - s0 * exp(parameter$sigma * sqrt(horizon) * 
         qnorm(1 - VaRp) + (parameter$mu - parameter$sigma^2/2) * horizon)
       return(var)
-    } else if (measure == "ES") {
-      es <- s0 * (1 - exp(parameter$mu * horizon)/(1 - ESp) * 
-        pnorm(qnorm(1 - ESp) - sqrt(horizon) * parameter$sigma))
-      return(es)
     }
-  } 
+    else {
+      if (measure == "ES") {
+        es <- s0 * (1 - exp(parameter$mu * horizon)/(1 - ESp) *
+          pnorm(qnorm(1 - ESp) - sqrt(horizon) * parameter$sigma))
+        return(es)
+      }
+    }
+  }
+
+  ## Parametric - exponentially weighted
   else {
     if (method == "Parametric - exponentially weighted") {
       parameter <- expEstGBM(price, windowLen)
@@ -80,47 +86,64 @@ cal_measure <- function(s0, price, windowLen, horizonDays,
         var <- s0 - s0 * exp(parameter$sigma * sqrt(horizon) * 
           qnorm(1 - VaRp) + (parameter$mu - parameter$sigma^2/2) * horizon)
         return(var)
-      } else if (measure == "ES") {
-        es <- s0 * (1 - exp(parameter$mu * horizon)/(1 - ESp) * 
-          pnorm(qnorm(1 - ESp) - sqrt(horizon) * parameter$sigma))
-        return(es)
       }
-    } 
-    # else {
-    #   if (method == "Historical Simulation") {
-    #     if (measure == "VaR") {
-    #       historical_rel_VaR <- function(price, s0, windowLenDays, VaRp, horizonDays){
-    #         rtn <- -diff(log(price))
-    #         PortfolioRes <- s0 * exp(rtn)
-    #         l <- length(PortfolioRes)
-    #         loss <- s0 - PortfolioRes
-    #         VaR <- NULL
-    #         for (i in 1:(l - windowLenDays)) {
-    #           VaR[i] <- quantile(loss[i:(i + windowLenDays)],VaRp)
-    #         }
-    #         return(VaR)
-    #       }
+      else {
+        if (measure == "ES") {
+          es <- s0 * (1 - exp(parameter$mu * horizon)/(1 - ESp) * 
+            pnorm(qnorm(1 - ESp) - sqrt(horizon) * parameter$sigma))
+          return(es)}
+      }
+    }
 
-    #       return(historical_rel_VaR(price, s0, windowLenDays, VaRp, horizonDays))
-    #     }
-    #   }
-    # }
+    ## Historical Simulation
+    else {
+      if (method == "Historical Simulation") {
+        if (measure == "VaR") {
+          PortfolioRes <- s0 * exp(-diff(log(price)))
+          histloss <- s0 - PortfolioRes
+          historical_rel_VaR <- NULL
+          for (i in 1:(length(PortfolioRes) - windowLenDays)) {
+            historical_rel_VaR[i] <- quantile(histloss[i:(i + windowLenDays)],VaRp)
+          }
+          return(historical_rel_VaR)
+        }
+        else {
+          if (measure == "VaR") {
+            return(NULL)
+          }
+        }
+      }
+
+      ## Monte Carlo Simulation
+      else{
+        if (method == "Monte Carlo Simulation") {
+          return(NULL)
+        }
+      }
+    }
   }
 }
 
 
+# MONTECARLO_VaR <- function(S,S0,w,p,day,npaths){
+#   t <- day/252
+#   windowsize <- w*252
+#   sigmu <- c_t(S,w,1)
+#   MCVaR <- vector()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#   l <- dim(sigmu)[1]
+  
+#   for (j in 1:l){
+#     loss <- NULL
+#     for (i in 1:npaths){
+#       c <- rnorm(1,0,sqrt(day/252))
+#       temp <- S0*exp((sigmu[j,2]- sigmu[j,1]^2/2)*day/252 + sigmu[j,1]*c)
+#       loss <- c(loss, S0 - temp)
+#     }
+#     MCVaR <- c(MCVaR,quantile(loss, p))
+#   }
+  
+#   MCVaR <- data.frame(S$Date[1:length(MCVaR)],MCVaR)
+#   names(MCVaR) <- c("Date", "MCVaR")
+#   return(MCVaR)
+# }

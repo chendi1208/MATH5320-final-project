@@ -17,7 +17,10 @@ shinyUI(dashboardPage(
   dashboardSidebar(
     sidebarMenu(id="tabs",
                 menuItem("Plot", tabName="plot", icon=icon("line-chart"), selected=TRUE),
-                menuItem("Table", tabName = "table", icon=icon("table")),
+                menuItem("Table", tabName = "table", icon=icon("table"),
+                       menuSubItem("Source data", tabName = "sourcet", icon = icon("angle-right")),
+                       menuSubItem("Calibration", tabName = "calit", icon = icon("angle-right")),
+                       menuSubItem("Measure output", tabName = "measuret", icon = icon("angle-right"))),
                 menuItem("ReadMe", tabName = "readme", icon=icon("mortar-board")),
                 menuItem("About", tabName = "about", icon = icon("question"))
     )
@@ -59,11 +62,25 @@ shinyUI(dashboardPage(
                              title = "Plot", status = "primary", solidHeader = TRUE)
                 ))
       ),
-      tabItem(tabName = "table",
-              box( width = NULL, status = "primary", solidHeader = TRUE, title="Table",                
-                   downloadButton('downloadTable', 'Download'),
+      tabItem(tabName = "sourcet",
+              box( width = NULL, status = "primary", solidHeader = TRUE, title="Source",                
+                   downloadButton('downloadData1', 'Download'),
                    br(),br(),
-                   tableOutput("table")
+                   tableOutput("table1")
+              )
+      ),
+      tabItem(tabName = "calit",
+              box( width = NULL, status = "primary", solidHeader = TRUE, title="Calibration",                
+                   downloadButton('downloadData2', 'Download'),
+                   br(),br(),
+                   tableOutput("table2")
+              )
+      ),
+      tabItem(tabName = "measuret",
+              box( width = NULL, status = "primary", solidHeader = TRUE, title="Measurement",                
+                   downloadButton('downloadData3', 'Download'),
+                   br(),br(),
+                   tableOutput("table3")
               )
       )
     )

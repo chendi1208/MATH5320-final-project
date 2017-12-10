@@ -13,31 +13,28 @@ stock_prices <- get_all_prices()
 
 # server function
 shinyServer(function(input, output) {
-  # output$test <- renderTable({
-  #   print('Updating')
-  #   position <- read.csv(input$file$datapath)
-  #   # position <- data.frame(ticker = 'MCD', amount = 100)
-  #   date_range <- c(as.Date(input$dates[1]), as.Date(input$dates[2]))
-  #   prices <- format_prices(stock_prices, position, date_range)
-  # 
-  #   # handle exception if no available data to form portfolio
-  #   if (nrow(prices) == 0) {
-  #     return(data.frame())
-  #   }
-  # 
-  #   ptf <- format_portfolio(prices, position, date_range)
-  #   ptf
-  # })
-  
-  output$plot <- renderPlot({
-    
+  ptfData <- reactive({
     position <- read.csv(input$file$datapath)
+    # position <- data.frame(ticker = 'MCD', amount = 100)
     date_range <- c(as.Date(input$dates[1]), as.Date(input$dates[2]))
     prices <- format_prices(stock_prices, position, date_range)
+  
+    # handle exception if no available data to form portfolio
     if (nrow(prices) == 0) {
       return(data.frame())
     }
+  
     ptf <- format_portfolio(prices, position, date_range)
+    ptf
+    })
+
+  output$table1 <- renderTable({
+    print('Updating')
+    ptfData()
+  })
+
+  combined <- reactive({
+    ptf <- ptfData()
     s0 <- ptf$Portfolio[dim(ptf)[1]]
     price <- ptf$Portfolio
     windowLen <- input$windowLen
@@ -58,17 +55,31 @@ shinyServer(function(input, output) {
       }
     }
     names(combined) <- c("Date", names)
-
+    combined
+    })
+  
+  output$plot <- renderPlot({
+    combined <- combined()
     fig <- ggplot(melt(combined, 
                 id.vars = "Date"), aes(x = as.Date(Date),
                                        y = value, group = variable)) + 
       geom_line(aes(color = variable)) + 
-      scale_color_discrete('', labels = names) +
+      scale_color_discrete('', labels = names(combined)[-1]) +
       labs(title = '', x = 'Time', y = 'Measure') +
       theme_bw() +
       theme(legend.position = c(0.8, 0.9), legend.background = element_blank())
     return(fig)
-
-
   })
+
+  output$table3 <- renderTable({
+    combined()
+  })
+
+  # output$downloadTable <- downloadHandler(
+  #   filename = "table.csv",
+  #   content = function(file) {
+  #     write.csv(rr(), file)
+  #   }
+  # )
 })
+
