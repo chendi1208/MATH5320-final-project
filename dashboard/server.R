@@ -59,13 +59,14 @@ shinyServer(function(input, output) {
     }
     names(combined) <- c("Date", names)
 
-    ggplot(melt(combined, 
-                id.vars = "Date"), aes(x=as.Date(Date),
+    fig <- ggplot(melt(combined, 
+                id.vars = "Date"), aes(x = as.Date(Date),
                                        y = value, group = variable)) + 
       geom_line(aes(color=variable)) + 
       scale_color_discrete('', labels = names) +
       labs(title = 'Portfolio variance (in dollars)', x = 'Time', y = 'Variance') +
       theme_bw()
+    return(fig)
 
     # fig <- ggplot() + theme_bw() +
     #   labs(title = 'VaR and ES with your choice', x = '', y = '') + 

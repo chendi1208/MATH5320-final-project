@@ -61,18 +61,14 @@ cal_measure <- function(s0, price, windowLen, horizonDays,
   }
 
   # Choose method
-  if (method == "Parametric - equally weighted") {
+  if (method == "Parametric - equally weighted" & measure == "VaR") {
     parameter <- winEstGBM(price, windowLen)
-  } else if (method == "Parametric - exponentially weighted") {
+    return(s0 - s0 * exp(parameter$sigma * sqrt(horizon) * 
+    qnorm(1 - VaRp) + (parameter$mu - parameter$sigma^2/2) * horizon))
+  } else if (method == "Parametric - exponentially weighted" & measure == "VaR") {
     parameter <- expEstGBM(price, windowLen)
-  }
-  gbm <- s0 - s0 * exp(parameter$sigma * sqrt(horizon) * 
-    qnorm(1 - VaRp) + (parameter$mu - parameter$sigma^2/2) * horizon)
-  ES <- 1
-  if (measure == "VaR") {
-    return(gbm)
-  } else if (measure == "ES") {
-    return(NULL)
+    return(s0 - s0 * exp(parameter$sigma * sqrt(horizon) * 
+    qnorm(1 - VaRp) + (parameter$mu - parameter$sigma^2/2) * horizon))
   }
 }
 
