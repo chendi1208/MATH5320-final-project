@@ -2,6 +2,7 @@ library(RSQLite)
 library(reshape2)
 library(dplyr)
 library(zoo)
+library(ggplot2)
 
 
 get_all_prices <- function() {
@@ -68,4 +69,5 @@ format_portfolio <- function(prices, position, date_range) {
   ptf$Portfolio <- apply(ptf, 1, sum)
   ptf$Date <- prices$Date
   return(ptf)
+  
 }

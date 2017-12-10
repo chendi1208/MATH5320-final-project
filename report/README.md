@@ -22,17 +22,17 @@
 # 4 Model Description
 Reference earlier validation docs as appropriate
 - Modeling theory/assumptions
-  - Include critical discussion on model choice pros/cons as appropriate
-  - Reference literature as appropriate
-  - Describe any approximations made and assess their significance
+  - Include critical discussion on model choice pros/cons as appropriate  ！
+  - Reference literature as appropriate  ！
+  - Describe any approximations made and assess their significance  ！
 - Mathematical description
-  - Model inputs
-  - Model outputs/reports (including later transformations if known/relevant, e.g., omega to vega transformation) and usage
+  - Model inputs ！
+  - Model outputs/reports (including later transformations if known/relevant, e.g., omega to vega transformation) and usage  ！
 - Model implementation, numerical methods (refer to quant docs as appropriate)
-  - Critically discuss (e.g., impact of number of MC sims, integration errors, etc.)
-- Calibration methodology (separate calibration tools require validation)
-- Model usage (refer to desk docs if available)
-- Model exposure (perspective on current and potential future model usage)
+  - Critically discuss (e.g., impact of number of MC sims, integration errors, etc.)  ！
+- Calibration methodology (separate calibration tools require validation) ！
+- Model usage (refer to desk docs if available)  ！
+- Model exposure (perspective on current and potential future model usage) ？
 # 5 Validation Methodology and Scope
 - What is the scope of the validation
 - Describe how validation was performed
