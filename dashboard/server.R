@@ -62,21 +62,13 @@ shinyServer(function(input, output) {
     fig <- ggplot(melt(combined, 
                 id.vars = "Date"), aes(x = as.Date(Date),
                                        y = value, group = variable)) + 
-      geom_line(aes(color=variable)) + 
+      geom_line(aes(color = variable)) + 
       scale_color_discrete('', labels = names) +
-      labs(title = 'Portfolio variance (in dollars)', x = 'Time', y = 'Variance') +
-      theme_bw()
+      labs(title = '', x = 'Time', y = 'Measure') +
+      theme_bw() +
+      theme(legend.position = c(0.8, 0.9), legend.background = element_blank())
     return(fig)
 
-    # fig <- ggplot() + theme_bw() +
-    #   labs(title = 'VaR and ES with your choice', x = '', y = '') + 
-    #   scale_color_continuous(guide=FALSE)
-    # for (i in 1:3) {
-    #   fig <- fig + plotwinvar(s0, ptf, input$lines_winvar[i])
-    #   fig <- fig + plotwines(s0, ptf, input$lines_wines[i])
-    #   fig <- fig + plotexpvar(s0, ptf, input$lines_expvar[i])
-    #   fig <- fig + plotexpes(s0, ptf, input$lines_expes[i])
-    # }
-    # print(fig)
+
   })
 })
