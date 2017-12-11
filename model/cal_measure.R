@@ -68,6 +68,26 @@ historical_rel_VaR <- function(price,s0,windowLenDays,VaRp,horizonDays){
   return(VaR)
 }
 
+  # method 4
+Monte_VaR <- function(price,s0,windowLen,VaRp,horizon,npaths){
+  parameter <- winEstGBM(price, windowLen)
+  sigma <- parameter$sigma
+  mu <- parameter$mu
+  MCVaR <- vector()
+
+  l <- length(sigma)
+  
+  for (j in 1:l){
+    loss <- NULL
+    for (i in 1:npaths){
+      c <- rnorm(1,0,sqrt(horizon))
+      temp <- s0*exp((mu[j]- sigma[j]^2/2)*horizon + sigma[j]*c)
+      loss <- c(loss, s0 - temp)
+    }
+    MCVaR <- c(MCVaR,quantile(loss, VaRp, na.rm = T))
+  }
+  return(MCVaR)
+}
 
 
 # Common measure to use
@@ -87,20 +107,20 @@ gbmES <- function(s0, mu, sigma, horizon, ESp) {
 
 
 cal_measure <- function(s0, price, windowLen, horizonDays, 
-  method, measure, VaRp, ESp) {
+  method, measure, npaths, VaRp, ESp) {
   windowLenDays <- windowLen * 252
   horizon <- horizonDays / 252
 
   # Choose method
   ## Parametric - equally weighted
   if (method == "Parametric - equally weighted") {
-    parameter <- winEstGBM(price, windowLen)
+    parameter1 <- winEstGBM(price, windowLen)
     if (measure == "VaR") {
-      return(gbmVaR(s0, parameter$mu, parameter$sigma, horizon, VaRp))
+      return(gbmVaR(s0, parameter1$mu, parameter1$sigma, horizon, VaRp))
     }
     else {
       if (measure == "ES") {
-        return(gbmES(s0, parameter$mu, parameter$sigma, horizon, ESp))
+        return(gbmES(s0, parameter1$mu, parameter1$sigma, horizon, ESp))
       }
     }
   }
@@ -108,13 +128,13 @@ cal_measure <- function(s0, price, windowLen, horizonDays,
   ## Parametric - exponentially weighted
   else {
     if (method == "Parametric - exponentially weighted") {
-      parameter <- expEstGBM(price, windowLen)
+      parameter2 <- expEstGBM(price, windowLen)
       if (measure == "VaR") {
-        return(gbmVaR(s0, parameter$mu, parameter$sigma, horizon, VaRp))
+        return(gbmVaR(s0, parameter2$mu, parameter2$sigma, horizon, VaRp))
       }
       else {
         if (measure == "ES") {
-          return(gbmES(s0, parameter$mu, parameter$sigma, horizon, ESp))}
+          return(gbmES(s0, parameter2$mu, parameter2$sigma, horizon, ESp))}
       }
     }
 
@@ -134,7 +154,14 @@ cal_measure <- function(s0, price, windowLen, horizonDays,
       ## Monte Carlo Simulation
       else{
         if (method == "Monte Carlo Simulation") {
-          return(NULL)
+          if (measure == "VaR") {
+            return(Monte_VaR(price,s0,windowLen,VaRp,horizon,npaths))
+          }
+          else {
+            if (measure == "VaR") {
+              return(NULL)
+            }
+          }
         }
       }
     }
