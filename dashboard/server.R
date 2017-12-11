@@ -2,17 +2,19 @@
 library(ggplot2)
 library(dygraphs)
 library(rowr)
+library(DT)
 
 
 # user defined modules
 source('../model/portfolio.R')
-source("../model/expEstGBM.R")
+source("../model/cal_measure.R")
 
 
 stock_prices <- get_all_prices()
 
 # server function
 shinyServer(function(input, output) {
+  
   ptfData <- reactive({
     position <- read.csv(input$file$datapath)
     # position <- data.frame(ticker = 'MCD', amount = 100)
@@ -26,11 +28,10 @@ shinyServer(function(input, output) {
   
     ptf <- format_portfolio(prices, position, date_range)
     ptf
-    })
+  })
 
-  output$table1 <- renderTable({
-    print('Updating')
-    ptfData()
+  output$table1 <- DT::renderDataTable({
+    DT::datatable(ptfData(), options = list(pageLength = 20))
   })
 
   combined <- reactive({
@@ -71,8 +72,12 @@ shinyServer(function(input, output) {
     return(fig)
   })
 
-  output$table3 <- renderTable({
-    combined()
+  output$table3 <- renderDataTable({
+    df <- combined()
+    for (i in names(df)[-1]) {
+      df[,i] <- round(df[,i])
+    }
+    DT::datatable(df, options = list(pageLength = 20))
   })
 
   # output$downloadTable <- downloadHandler(
@@ -82,4 +87,6 @@ shinyServer(function(input, output) {
   #   }
   # )
 })
+
+
 

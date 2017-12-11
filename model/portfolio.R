@@ -66,6 +66,7 @@ format_portfolio <- function(prices, position, date_range) {
     universe_valid,
     function(x) {
       as.numeric(prices[, x]) * as.numeric(shares[x]) }))
+  ptf <- round(ptf)
   ptf$Portfolio <- apply(ptf, 1, sum)
   ptf$Date <- prices$Date
   return(ptf)

@@ -66,21 +66,21 @@ shinyUI(dashboardPage(
               box( width = NULL, status = "primary", solidHeader = TRUE, title="Source",                
                    downloadButton('downloadData1', 'Download'),
                    br(),br(),
-                   tableOutput("table1")
+                   DT::dataTableOutput("table1")
               )
       ),
       tabItem(tabName = "calit",
               box( width = NULL, status = "primary", solidHeader = TRUE, title="Calibration",                
                    downloadButton('downloadData2', 'Download'),
                    br(),br(),
-                   tableOutput("table2")
+                   DT::dataTableOutput("table2")
               )
       ),
       tabItem(tabName = "measuret",
               box( width = NULL, status = "primary", solidHeader = TRUE, title="Measurement",                
                    downloadButton('downloadData3', 'Download'),
                    br(),br(),
-                   tableOutput("table3")
+                   DT::dataTableOutput("table3")
               )
       )
     )
