@@ -31,23 +31,23 @@ shinyServer(
       ptf <- format_portfolio(prices, position, date_range)
       ptf
     })
+
     ## for table and download
     output$table1 <- DT::renderDataTable({
       df <- ptfData()
       for (i in names(df)[-1]) {
-        df[,i] <- round(df[,i])
+        df[,i] <- round(df[, i])
       }
       DT::datatable(df, options = list(pageLength = 20))
     })
     output$download_source <- downloadHandler(
-        filename = "source.csv",
-        content = function(file) {write.csv(ptfData(), file, row.names = FALSE)}
-    )
+      filename = "source.csv",
+      content = function(file) {write.csv(ptfData(), file, row.names = FALSE)})
 
     ## caliData
     caliData <- reactive({
       ptf <- ptfData()
-      })
+    })
 
     ## combined
     combined <- reactive({
@@ -73,7 +73,8 @@ shinyServer(
       }
       names(combined) <- c("Date", names)
       combined
-      })
+    })
+
     ## for table and download
     output$table3 <- renderDataTable({
       df <- combined()
@@ -82,21 +83,20 @@ shinyServer(
       }
       DT::datatable(df, options = list(pageLength = 20))
     })
+
     output$download_measure <- downloadHandler(
-        filename = "measure.csv",
-        content = function(file) {write.csv(combined(), file, row.names = FALSE)}
-    )
+      filename = "measure.csv",
+      content = function(file) {write.csv(combined(), file, row.names = FALSE)})
 
     # plot 1
     output$plot <- renderPlot({
       combined <- combined()
-      fig <- ggplot(melt(combined, 
-                  id.vars = "Date"), aes(x = as.Date(Date),
-                                         y = value, group = variable)) + 
+      fig <- ggplot(
+          melt(combined, id.vars = "Date"),
+          aes(x = as.Date(Date), y = value, group = variable)) + theme_bw() +
         geom_line(aes(color = variable)) + 
         scale_color_discrete('', labels = names(combined)[-1]) +
         labs(title = '', x = 'Time', y = 'Measure') +
-        theme_bw() +
         theme(legend.position = c(0.8, 0.9), legend.background = element_blank())
       return(fig)
     })
