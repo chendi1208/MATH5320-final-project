@@ -69,5 +69,4 @@ format_portfolio <- function(prices, position, date_range) {
       as.numeric(prices[, x]) * as.numeric(shares[x]) })))
   ptf$Portfolio <- apply(ptf[,-1], 1, sum)
   return(ptf)
-  
 }

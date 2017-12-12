@@ -126,47 +126,38 @@ cal_measure <- function(s0, price, windowLen, horizonDays,
   }
 
   ## Parametric - exponentially weighted
-  else {
-    if (method == "Parametric - exponentially weighted") {
-      parameter2 <- expEstGBM(price, windowLen)
+  else if (method == "Parametric - exponentially weighted") {
+    parameter2 <- expEstGBM(price, windowLen)
+    if (measure == "VaR") {
+      return(gbmVaR(s0, parameter2$mu, parameter2$sigma, horizon, VaRp))
+    }
+    else {
+      if (measure == "ES") {
+        return(gbmES(s0, parameter2$mu, parameter2$sigma, horizon, ESp))}
+    }
+  }
+
+  ## Historical Simulation
+  else if (method == "Historical Simulation") {
+    if (measure == "VaR") {
+      return(historical_rel_VaR(price,s0,windowLenDays,VaRp,horizonDays))
+    }
+    else {
       if (measure == "VaR") {
-        return(gbmVaR(s0, parameter2$mu, parameter2$sigma, horizon, VaRp))
-      }
-      else {
-        if (measure == "ES") {
-          return(gbmES(s0, parameter2$mu, parameter2$sigma, horizon, ESp))}
+        return(NULL)
       }
     }
+  }
 
-    ## Historical Simulation
+  ## Monte Carlo Simulation
+  else if (method == "Monte Carlo Simulation") {
+    if (measure == "VaR") {
+      return(Monte_VaR(price,s0,windowLen,VaRp,horizon,npaths))
+    }
     else {
-      if (method == "Historical Simulation") {
-        if (measure == "VaR") {
-          return(historical_rel_VaR(price,s0,windowLenDays,VaRp,horizonDays))
-        }
-        else {
-          if (measure == "VaR") {
-            return(NULL)
-          }
-        }
-      }
-
-      ## Monte Carlo Simulation
-      else{
-        if (method == "Monte Carlo Simulation") {
-          if (measure == "VaR") {
-            return(Monte_VaR(price,s0,windowLen,VaRp,horizon,npaths))
-          }
-          else {
-            if (measure == "VaR") {
-              return(NULL)
-            }
-          }
-        }
+      if (measure == "VaR") {
+        return(NULL)
       }
     }
   }
 }
-
-
-

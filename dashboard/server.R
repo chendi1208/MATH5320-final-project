@@ -100,11 +100,4 @@ shinyServer(
         theme(legend.position = c(0.8, 0.9), legend.background = element_blank())
       return(fig)
     })
-
-
-
-
 })
-
-
-
