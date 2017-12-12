@@ -19,9 +19,9 @@ winEstGBM <- function(price, windowLen){
   rtnsq <- rtn * rtn
   x2bar <- c(rollapply(rtnsq, windowLen, mean), rep(NA, windowLen - 1))
   var <- x2bar - mubar ** 2
-  sigmabar = sqrt(var)
-  sigma <- sigmabar/sqrt(1/252)
-  mu <- mubar/(1/252) + (sigma ** 2)/2
+  sigmabar <- sqrt(var)
+  sigma <- sigmabar * sqrt(252)
+  mu <- mubar * 252 + (sigma ** 2) / 2
   return(list(rtn = rtn, mu = mu, sigma = sigma, 
               mubar = mubar, sigmabar = sigmabar))
 }
@@ -29,8 +29,8 @@ winEstGBM <- function(price, windowLen){
   # method 2
 solve_lambda <- function(windowLen){
   result <- uniroot(function(o) {
-    2*(2*o^(windowLen+1)+o^(windowLen+2)+o^windowLen-o)
-    },c(.5,1))
+    2 * (2 * o**(windowLen + 1) + o**(windowLen + 2) + o**windowLen - o)
+  }, c(.5, 1))
   return(result$root)
 }
 
@@ -38,38 +38,44 @@ expEstGBM <- function(price, windowLen){
   lambda <- solve_lambda(windowLen)
   rtn <- c(-diff(log(price)),NA)
   windowLen_exp <- ceiling(log(0.01) / log(as.numeric(lambda)))
-  if (windowLen_exp > 5000) {windowLen_exp = 5000}
+  if (windowLen_exp > 5000) {
+    windowLen_exp = 5000
+  }
+
   w <- as.numeric(lambda) ** (1:windowLen_exp)
   w <- w / sum(w)
   mubar <- c(rollapply(rtn, windowLen_exp, function(o){o %*% w}), rep(NA, windowLen_exp-1))
   rtnsq <- rtn * rtn
   x2bar <- c(rollapply(rtnsq, windowLen_exp, function(o){o %*% w}), rep(NA, windowLen_exp-1))
   var <- x2bar - mubar ** 2
-  sigmabar = sqrt(var)
-  sigma <- sigmabar/sqrt(1/252)
-  mu <- mubar/(1/252) + (sigma ** 2)/2
+  sigmabar <- sqrt(var)
+  sigma <- sigmabar * sqrt(252)
+  mu <- mubar * 252 + (sigma ** 2) / 2
   return(list(rtn = rtn, mu = mu, sigma = sigma, 
               mubar = mubar, sigmabar = sigmabar))
 }
 
   # method 3
-historical_rel_VaR <- function(price,s0,windowLenDays,VaRp,horizonDays){
+historical_rel_VaR <- function(price, s0, windowLenDays, VaRp, horizonDays) {
   l <- length(price)
-  if (l < horizonDays) {return(NULL)}
-  logreturn <- log(price[1:(l-horizonDays)]) - log(price[(1+horizonDays):l])
-  PortfolioRes <- s0*exp(logreturn)
+  if (l < horizonDays) {
+    return(NULL)
+  }
+
+  logreturn <- log(price[1:(l - horizonDays)]) - log(price[(1 + horizonDays):l])
+  PortfolioRes <- s0 * exp(logreturn)
   l <- length(PortfolioRes)
   loss <- s0 - PortfolioRes
   VaR <- NULL
   if (l < windowLenDays) {return(NULL)}
   for (i in 1:(l-windowLenDays)){
-    VaR[i] <- quantile(loss[i:(i+windowLenDays)],VaRp, na.rm = TRUE)
+    VaR[i] <- quantile(loss[i:(i + windowLenDays)], VaRp, na.rm = TRUE)
   }
   return(VaR)
 }
 
   # method 4
-Monte_VaR <- function(price,s0,windowLen,VaRp,horizon,npaths){
+Monte_VaR <- function(price, s0, windowLen, VaRp, horizon, npaths){
   parameter <- winEstGBM(price, windowLen)
   sigma <- parameter$sigma
   mu <- parameter$mu
@@ -80,8 +86,8 @@ Monte_VaR <- function(price,s0,windowLen,VaRp,horizon,npaths){
   for (j in 1:l){
     loss <- NULL
     for (i in 1:npaths){
-      c <- rnorm(1,0,sqrt(horizon))
-      temp <- s0*exp((mu[j]- sigma[j]^2/2)*horizon + sigma[j]*c)
+      c <- rnorm(1, 0, sqrt(horizon))
+      temp <- s0*exp((mu[j] - sigma[j]^2/2)*horizon + sigma[j] * c)
       loss <- c(loss, s0 - temp)
     }
     MCVaR <- c(MCVaR,quantile(loss, VaRp, na.rm = T))

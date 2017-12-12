@@ -56,8 +56,8 @@ shinyUI(
                   "Parametric - equally weighted", 
                   "Parametric - exponentially weighted",
                   "Historical Simulation", 
-                  "Monte Carlo Simulation"), 
-                selected = NULL, multiple = TRUE, selectize = TRUE),
+                  "Monte Carlo Simulation"
+                  ), selected = NULL, multiple = TRUE, selectize = TRUE),
                 numericInput("npaths", label = h4("npaths"), value = 100)
               )
             )
