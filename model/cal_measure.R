@@ -102,32 +102,41 @@ historical_ES <- function(price, s0, windowLenDays, ESp, horizonDays){
 }
 
 # MONTE CARLO
-Monte_VaR <- function(price, s0, windowLen, VaRp, horizon, npaths){
-  parameter <- winEstGBM(price, windowLen)
-  sigma <- parameter$sigma
-  mu <- parameter$mu
+Monte_VaR <- function(s0, mu, sigma, VaRp, horizon, npaths){
   MCVaR <- vector()
-
-  l <- length(sigma)
+  l <- length(mu)
   
   for (j in 1:l){
-    loss <- NULL
+    pnl <- NULL
     for (i in 1:npaths){
-      c <- rnorm(1, 0, sqrt(horizon))
-      temp <- s0*exp((mu[j] - sigma[j]^2/2)*horizon + sigma[j] * c)
-      loss <- c(loss, s0 - temp)
+      c <- rnorm(1,0,sqrt(horizon))
+      temp <- s0 * exp((mu[j] - sigma[j] ** 2 / 2) * horizon + sigma[j] * c)
+      pnl <- c(pnl, s0 - temp)
     }
-    MCVaR <- c(MCVaR,quantile(loss, VaRp, na.rm = T))
+    MCVaR <- c(MCVaR, quantile(pnl, VaRp, na.rm = T))
   }
   return(MCVaR)
 }
 
+Monte_ES <- function(s0, mu, sigma, ESp, horizon, npaths){
+  MCES <- vector()
+  l <- length(mu)
+  
+  for (j in 1:l){
+    pnl <- NULL
+    for (i in 1:npaths){
+      c <- rnorm(1,0,sqrt(horizon))
+      temp <- s0 * exp((mu[j] - sigma[j] ** 2 / 2) * horizon + sigma[j] * c)
+      pnl <- c(pnl, s0 - temp)
+    }
+    temp <- pnl[pnl > quantile(pnl, ESp, na.rm = T)]
+    ESvalue <- mean(temp)
+    MCES <- c(MCES, ESvalue)
+  }
+  return(MCES)  
+}
 
-
-
-
-
-
+# CALCULATION
 cal_measure <- function(s0, price, windowLen, horizonDays, 
   method, measure, npaths, VaRp, ESp, data) {
   windowLenDays <- windowLen * 252
@@ -137,7 +146,7 @@ cal_measure <- function(s0, price, windowLen, horizonDays,
   ## Parametric - equally weighted
   if (method == "Parametric - equally weighted") {
     if (measure == "VaR") {
-      return(gbmVaR(s0, data$WindowMean, data$WindowSD , horizon, VaRp))
+      return(gbmVaR(s0, data$WindowMean, data$WindowSD, horizon, VaRp))
     }
     else {
       if (measure == "ES") {
@@ -172,11 +181,11 @@ cal_measure <- function(s0, price, windowLen, horizonDays,
   ## Monte Carlo Simulation
   else if (method == "Monte Carlo Simulation") {
     if (measure == "VaR") {
-      return(Monte_VaR(price,s0,windowLen,VaRp,horizon,npaths))
+      return(Monte_VaR(s0, data$WindowMean, data$WindowSD, VaRp, horizon, npaths))
     }
     else {
       if (measure == "ES") {
-        return(NULL)
+        return(Monte_ES(s0, data$WindowMean, data$WindowSD, ESp, horizon, npaths))
       }
     }
   }

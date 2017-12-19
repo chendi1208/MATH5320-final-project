@@ -42,7 +42,8 @@ shinyUI(
                 tabPanel(h5("Portfolio"),
                   dateRangeInput("dates", start = "1992-09-24", label = h4("Investment period")),
                   fileInput("portfolio", h4("Position input")),
-                  fileInput("investment", h4("Initial investment input"))
+                  fileInput("investment", h4("Initial investment input")),
+                  submitButton("Submit")
                 ),
                 tabPanel(h5("Parameters"),
                   sliderInput("windowLen",
@@ -62,7 +63,7 @@ shinyUI(
                     "Historical Simulation", 
                     "Monte Carlo Simulation"), 
                   selected = NULL, multiple = TRUE, selectize = TRUE),
-                  numericInput("npaths", label = h4("npaths"), value = 100)
+                  numericInput("npaths", label = h4("npaths"), value = 300)
                 )
               )
             ),
