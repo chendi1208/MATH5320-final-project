@@ -40,8 +40,9 @@ shinyUI(
             column(width = 4, 
               tabBox(width = NULL,
                 tabPanel(h5("Portfolio"),
-                  dateRangeInput("dates", label = h4("Investment period")),
-                  fileInput("file", label = h4("File input"))
+                  dateRangeInput("dates", start = "1992-09-24", label = h4("Investment period")),
+                  fileInput("portfolio", "Position input"),
+                  fileInput("investment", "Initial investment input")
                 ),
                 tabPanel(h5("Parameters"),
                   sliderInput("windowLen",

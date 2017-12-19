@@ -7,32 +7,54 @@ library(zoo)
 
 
 # user defined modules
-source('../model/portfolio.R')
+# source('../model/portfolio.R')
 source("../model/cal_measure.R")
-# source("../model/backtest.R")
 
 
-stock_prices <- get_all_prices()
+# stock_prices <- get_all_prices()
 
 # server function
 shinyServer(
   function(input, output) {
     # Datasets
     ## ptfData
+    # ptfData <- reactive({
+    #   position <- read.csv(input$file$datapath)
+    #   # position <- data.frame(ticker = 'MCD', amount = 100)
+    #   date_range <- c(as.Date(input$dates[1]), as.Date(input$dates[2]))
+    #   prices <- format_prices(stock_prices, position, date_range)
+    
+    #   # handle exception if no available data to form portfolio
+    #   if (nrow(prices) == 0) {
+    #     return(data.frame())
+    #   }
+    
+    #   ptf <- format_portfolio(prices, position, date_range)
+    #   ptf
+    # })
+
+    # customize csv
     ptfData <- reactive({
-      position <- read.csv(input$file$datapath)
-      # position <- data.frame(ticker = 'MCD', amount = 100)
+      prices <- read.csv(input$portfolio$datapath)
+      investment <- read.csv(input$investment$datapath)
+
+      prices$Date <- as.Date(prices$Date, "%m/%d/%y")
       date_range <- c(as.Date(input$dates[1]), as.Date(input$dates[2]))
-      prices <- format_prices(stock_prices, position, date_range)
-    
-      # handle exception if no available data to form portfolio
-      if (nrow(prices) == 0) {
-        return(data.frame())
+      start_date <- date_range[1]
+      end_date <- date_range[2]
+      prices <- prices[(prices$Date >= start_date) & (prices$Date <= end_date), ]
+      init_prices <- prices[dim(prices)[1], ][-1]
+
+      shares <- unlist(investment$amount / init_prices)
+      portfolio <- 0
+      for (i in 1:length(shares)) {
+        portfolio <- portfolio + shares[i] * prices[, i+1]
       }
-    
-      ptf <- format_portfolio(prices, position, date_range)
-      ptf
-    })
+      prices$Portfolio <- portfolio
+      prices$Date <- format(prices$Date)
+      return(prices)
+      })
+
     ## for table and download
     output$table1 <- DT::renderDataTable({
       df <- ptfData()
@@ -284,8 +306,4 @@ shinyServer(
     #     return(bt2)
     # })
 
-
 })
-
-
-
