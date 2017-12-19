@@ -10,7 +10,7 @@ shinyUI(
       title = 'Risk System',
       tags$li(
         class = 'dropdown',
-        tags$a(href = 'mailto:cd2904@columbia.edu, yyy@columbia.edu', icon('envelope'))
+        tags$a(href = 'mailto:cd2904@columbia.edu, zs2331@columbia.edu', icon('envelope'))
       )
     ),
 
@@ -25,7 +25,8 @@ shinyUI(
         menuItem("Table", tabName = "table", icon=icon("table"),
           menuSubItem("Source data", tabName = "sourcet", icon = icon("angle-right")),
           menuSubItem("Calibration", tabName = "calit", icon = icon("angle-right")),
-          menuSubItem("Measure output", tabName = "measuret", icon = icon("angle-right"))),
+          menuSubItem("Measure output", tabName = "measuret", icon = icon("angle-right")),
+          menuSubItem("Exceptions", tabName = "exct", icon = icon("angle-right"))),
         menuItem("About", tabName = "about", icon = icon("question"))
       )
     ),
@@ -45,9 +46,9 @@ shinyUI(
                 tabPanel(h5("Parameters"),
                   sliderInput("windowLen",
                     label = h4("Historical window length (in years)"),
-                    min = 1, max = 10, value = 5),
+                    min = 1, max = 10, value = 2),
                   sliderInput("horizonDays", label = h4("Horizon (in days)"),
-                    min = 1, max = 10, value = 5),
+                    min = 1, max = 10, value = 1),
                   numericInput("text1", 
                     label = h4("Probobility for calculating VaR"), value = 0.99),
                   numericInput("text2", 
@@ -70,6 +71,20 @@ shinyUI(
             )
           )
         ),
+        # Page 2-3
+        tabItem(tabName = "cali",
+          box(width = NULL, plotOutput("plotcali1",height="500px"), collapsible = TRUE,
+            title = "Mean Calibration Plot", status = "primary", solidHeader = TRUE),
+          box(width = NULL, plotOutput("plotcali2",height="500px"), collapsible = TRUE,
+            title = "Standard Calibration Plot", status = "primary", solidHeader = TRUE)
+        ), 
+        # Page 2-2
+        tabItem(tabName = "bt",
+          box(width = NULL, plotOutput("bt1",height="500px"), collapsible = TRUE,
+            title = "Exceptions Per Year", status = "primary", solidHeader = TRUE),
+          box(width = NULL, plotOutput("bt2",height="500px"), collapsible = TRUE,
+            title = "VaR vs Realized Losses", status = "primary", solidHeader = TRUE)
+        ), 
         # Page 3-1
         tabItem(tabName = "sourcet",
           box(width = NULL, status = "primary", solidHeader = TRUE, title="Source",  
@@ -90,6 +105,13 @@ shinyUI(
           box(width = NULL, status = "primary", solidHeader = TRUE, title="Measurement", 
             downloadButton('download_measure', 'Download'), br(), br(),
             DT::dataTableOutput("table3")
+          )
+        ),
+        # Page 3-4
+        tabItem(tabName = "exct",
+          box(width = NULL, status = "primary", solidHeader = TRUE, title="Exceptions Per Year", 
+            downloadButton('download_ex', 'Download'), br(), br(),
+            DT::dataTableOutput("excepTable")
           )
         )
       )
