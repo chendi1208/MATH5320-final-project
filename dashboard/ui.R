@@ -67,30 +67,30 @@ shinyUI(
               )
             ),
             column(width = 8,
-              box(width = NULL, plotOutput("plot",height="500px"), collapsible = TRUE,
+              box(width = NULL, plotOutput("measDataplot",height="500px"), collapsible = TRUE,
                 title = "Plot", status = "primary", solidHeader = TRUE)
             )
           )
         ),
         # Page 2-3
         tabItem(tabName = "cali",
-          box(width = NULL, plotOutput("plotcali1",height="500px"), collapsible = TRUE,
+          box(width = NULL, plotOutput("caliDataplot1",height="500px"), collapsible = TRUE,
             title = "Mean Calibration Plot", status = "primary", solidHeader = TRUE),
-          box(width = NULL, plotOutput("plotcali2",height="500px"), collapsible = TRUE,
+          box(width = NULL, plotOutput("caliDataplot2",height="500px"), collapsible = TRUE,
             title = "Standard Calibration Plot", status = "primary", solidHeader = TRUE)
         ), 
         # Page 2-2
         tabItem(tabName = "bt",
-          box(width = NULL, plotOutput("bt1",height="500px"), collapsible = TRUE,
+          box(width = NULL, plotOutput("excDataplot1",height="500px"), collapsible = TRUE,
             title = "Exceptions Per Year", status = "primary", solidHeader = TRUE),
-          box(width = NULL, plotOutput("bt2",height="500px"), collapsible = TRUE,
+          box(width = NULL, plotOutput("excDataplot2",height="500px"), collapsible = TRUE,
             title = "VaR vs Realized Losses", status = "primary", solidHeader = TRUE)
         ), 
         # Page 3-1
         tabItem(tabName = "sourcet",
           box(width = NULL, status = "primary", solidHeader = TRUE, title="Source",  
             downloadButton('download_source', 'Download'), br(), br(),
-            DT::dataTableOutput("table1")
+            DT::dataTableOutput("ptfDatatable")
           )
         ),
         tabItem(tabName = "readme", includeMarkdown("../README.md")),
@@ -98,21 +98,21 @@ shinyUI(
         tabItem(tabName = "calit",
           box( width = NULL, status = "primary", solidHeader = TRUE, title="Calibration",
             downloadButton('download_cali', 'Download'), br(), br(),
-            DT::dataTableOutput("table2")
+            DT::dataTableOutput("caliDatatable")
           )
         ),
         # Page 3-3
         tabItem(tabName = "measuret",
           box(width = NULL, status = "primary", solidHeader = TRUE, title="Measurement", 
             downloadButton('download_measure', 'Download'), br(), br(),
-            DT::dataTableOutput("table3")
+            DT::dataTableOutput("measDatatable")
           )
         ),
         # Page 3-4
         tabItem(tabName = "exct",
           box(width = NULL, status = "primary", solidHeader = TRUE, title="Exceptions Per Year", 
             downloadButton('download_ex', 'Download'), br(), br(),
-            DT::dataTableOutput("excepTable")
+            DT::dataTableOutput("excDatatable")
           )
         )
       )

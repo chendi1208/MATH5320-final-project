@@ -41,14 +41,17 @@ weighted_calibrate <- function(price, windowLenDays, horizonDays){
   logreturn <- -diff(log(price), horizonDays)
   l <- length(logreturn)
   
-  coef <- lambda ** seq(0, 101-1)
+  windowLen <- ceiling(log(0.01) / log(lambda))
+  if (windowLen > 5000) {windowLen = 5000}
+
+  coef <- lambda ** seq(0, windowLen-1)
   weights <- coef / sum(coef)
   
   sigmu <- NULL
-  if (l < 101) {return(NULL)}
-  for (i in 1:(l - 101 + 1)){
-      mubar <- sum(weights * logreturn[i:(i + 101 - 1)])
-      varbar <- sum(weights * (logreturn[i:(i + 101 - 1)]) ** 2) - mubar ** 2
+  if (l < windowLen) {return(NULL)}
+  for (i in 1:(l - windowLen + 1)){
+      mubar <- sum(weights * logreturn[i:(i + windowLen - 1)])
+      varbar <- sum(weights * (logreturn[i:(i + windowLen - 1)]) ** 2) - mubar ** 2
       sigbar <- sqrt(varbar)
       sig <- sigbar / sqrt(horizon)
       mu <- mubar / horizon + sig ** 2/2
