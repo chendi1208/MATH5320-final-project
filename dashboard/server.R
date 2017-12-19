@@ -253,5 +253,22 @@ shinyServer(
         theme_bw() +
         theme(legend.position = c(0.8, 0.9), legend.background = element_blank())
       return(excDataplot1)
-    })   
+    })
+    output$excDataplot2 <- renderPlot({
+      loss <- excData()[, c(1,2)]
+      measData <- measData()[, -1]
+      comparison <- cbind.fill(loss, measData, fill = NA)
+      # remove rows that have all NAs
+      comparison <- comparison[!rowSums(!is.na(comparison[,-c(1,2)])) == 0,]
+
+      excDataplot2 <- ggplot(melt(comparison, 
+                  id.vars = "Date"), aes(x = as.Date(Date),
+                                         y = value, group = variable)) + 
+        geom_line(aes(color = variable)) + 
+        scale_color_discrete('', labels = c("Actual Loss", names(comparison)[-c(1,2)])) +
+        labs(title = '', x = '', y = '') +
+        theme_bw() +
+        theme(legend.position = c(0.8, 0.9), legend.background = element_blank())
+      return(excDataplot2)
+    }) 
 })
