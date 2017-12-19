@@ -1,18 +1,14 @@
-# In one function
-# Common use input: 
-  # price: current position
-  # windowLen: window length (in year)
-    # windowLenDays <- windowLen * 252
-  # s0: initial position
-  # horizonDays (in day)
-    # horizon <- horizonDays / 252
-  # method: "winestimate", "expestimate"
-  # VaRp
-  # ESp
+# price: current position
+# s0: initial position
+# windowLen: window length (in year). Default: 5 year window
+# (windowLenDays <- windowLen * 252)
+# horizonDays (in day). Default: 5 day horizon
+# (horizon <- horizonDays / 252)
 
 
-# Calibration
-## window
+
+# CALIBRATION
+# window
 window_calibrate <- function(price, windowLen, horizonDays) {
   horizon <- horizonDays / 252
   windowLenDays <- windowLen * 252
@@ -28,7 +24,7 @@ window_calibrate <- function(price, windowLen, horizonDays) {
   return(df)
 }
 
-## exponential
+# exponential
 solve_lambda <- function(windowLenDays){
   result <- uniroot(function(o) {
     2 * (2 * o**(windowLenDays + 1) + o**(windowLenDays + 2) + o**windowLenDays - o)
@@ -63,28 +59,49 @@ weighted_calibrate <- function(price, windowLenDays, horizonDays){
   return(df)
 }
 
+# PARAMETRIC MEASURE
+gbmVaR <- function(s0, mu, sigma, horizon, VaRp) {
+  gbm <- s0 - s0 * exp(sigma * sqrt(horizon) * 
+    qnorm(1 - VaRp) + (mu - sigma^2/2) * horizon)
+  return(gbm)
+}
 
 
-  # method 3
-historical_rel_VaR <- function(price, s0, windowLenDays, VaRp, horizonDays) {
-  l <- length(price)
-  if (l < horizonDays) {
-    return(NULL)
-  }
+gbmES <- function(s0, mu, sigma, horizon, ESp) {
+  es <- s0 * (1 - exp(mu * horizon)/(1 - ESp) *
+    pnorm(qnorm(1 - ESp) - sqrt(horizon) * sigma))
+  return(es)
+}
 
-  logreturn <- log(price[1:(l - horizonDays)]) - log(price[(1 + horizonDays):l])
-  PortfolioRes <- s0 * exp(logreturn)
-  l <- length(PortfolioRes)
-  loss <- s0 - PortfolioRes
+# HISTORIC SIMULATION
+historical_VaR <- function(price, s0, windowLenDays, VaRp, horizonDays) {
+  rtn <- -diff(log(price), horizonDays)
+  mtm <- s0 * exp(rtn)
+  pnl <- s0 - mtm
+
   VaR <- NULL
-  if (l < windowLenDays) {return(NULL)}
-  for (i in 1:(l-windowLenDays)){
-    VaR[i] <- quantile(loss[i:(i + windowLenDays)], VaRp, na.rm = TRUE)
+  if (length(mtm) < windowLenDays) {return(NULL)}
+  for (i in 1:(length(mtm) - windowLenDays)){
+    VaR[i] <- quantile(pnl[i:(i + windowLenDays)], VaRp, na.rm = TRUE)
   }
   return(VaR)
 }
 
-  # method 4
+historical_ES <- function(price, s0, windowLenDays, ESp, horizonDays){
+  rtn <- -diff(log(price), horizonDays)
+  mtm <- s0 * exp(rtn)
+
+  ES <- NULL
+  if (length(mtm) < windowLenDays) {return(NULL)}
+  for (i in 1:(length(mtm) - windowLenDays + 1)){
+    Extreme <- quantile(mtm[i:(i + windowLenDays - 1)], 1 - ESp, na.rm = T)
+    set <- mtm[i:(i + windowLenDays - 1)]
+    ES[i] <- s0 - mean(set[set <= Extreme])
+  }
+  return(ES)
+}
+
+# MONTE CARLO
 Monte_VaR <- function(price, s0, windowLen, VaRp, horizon, npaths){
   parameter <- winEstGBM(price, windowLen)
   sigma <- parameter$sigma
@@ -106,44 +123,8 @@ Monte_VaR <- function(price, s0, windowLen, VaRp, horizon, npaths){
 }
 
 
-# Common measure to use
 
-gbmVaR <- function(s0, mu, sigma, horizon, VaRp) {
-  gbm <- s0 - s0 * exp(sigma * sqrt(horizon) * 
-    qnorm(1 - VaRp) + (mu - sigma^2/2) * horizon)
-  return(gbm)
-}
 
-# GBM_VaR <- function(price, s0, horizonDays, VaRp, windowLen){
-#   horizon <- horizonDays / 252
-#   sigmu <- window_calibrate(price, windowLen, 1)
-#   GBM_VaR <- vector()
-
-#   GBM_VaR <- s0-s0*exp(sigmu$sigma*sqrt(horizon)*qnorm(1-VaRp)+(sigmu$mu-sigmu$sigma^2/2)*horizon)
-#   return(GBM_VaR)
-# }
-
-# weighted_GBM_VaR <- function(price,s0,horizonDays,VaRp, windowLen){
-#   windowLenDays <- windowLen * 252
-#   horizon <- horizonDays / 252
-#   sigmu <- weighted_calibrate(price, windowLenDays, horizonDays)
-#   GBM_VaR <- vector()
-  
-#   l <- lengths(sigmu)[[1]]
-#   for (i in 1:l){
-#     u <- sigmu$mu
-#     d<- sigmu$sigma
-#     GBM_VaR[i] <- s0-s0*exp(d[i]*sqrt(horizon)*qnorm(1-VaRp)+(u[i]-d[i]^2/2)*horizon)
-#   }
-  
-#   return(GBM_VaR)
-# }
-
-gbmES <- function(s0, mu, sigma, horizon, ESp) {
-  es <- s0 * (1 - exp(mu * horizon)/(1 - ESp) *
-    pnorm(qnorm(1 - ESp) - sqrt(horizon) * sigma))
-  return(es)
-}
 
 
 
@@ -179,11 +160,11 @@ cal_measure <- function(s0, price, windowLen, horizonDays,
   ## Historical Simulation
   else if (method == "Historical Simulation") {
     if (measure == "VaR") {
-      return(historical_rel_VaR(price,s0,windowLenDays,VaRp,horizonDays))
+      return(historical_VaR(price,s0,windowLenDays,VaRp,horizonDays))
     }
     else {
-      if (measure == "VaR") {
-        return(NULL)
+      if (measure == "ES") {
+        return(historical_ES(price,s0,windowLenDays,ESp,horizonDays))
       }
     }
   }
@@ -194,7 +175,7 @@ cal_measure <- function(s0, price, windowLen, horizonDays,
       return(Monte_VaR(price,s0,windowLen,VaRp,horizon,npaths))
     }
     else {
-      if (measure == "VaR") {
+      if (measure == "ES") {
         return(NULL)
       }
     }
