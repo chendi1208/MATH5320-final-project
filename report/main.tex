@@ -1,0 +1,202 @@
+% !TEX encoding = UTF-8 Unicode
+\documentclass[letterpaper,11pt, oneside]{layout}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%% Title of Titlepage %%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{Risk Calculation System}
+\subtitle{MATH 5320 Financial Risk Management and Regulation Final Project}
+\date{\today}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%% Document %%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\cleardoublepage
+\maketitle
+
+\frontmatter
+\begin{spacing}{1}
+%\include{body/abstract}
+
+\tableofcontents
+\listoffigures
+\listoftables
+\end{spacing}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\mainmatter
+
+\chapter{Executive Summary}
+\label{chap:summ}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Purpose of review}
+\label{sec:summ:pr}
+
+This is a review of our group’s project of development of a risk calculation system for a user-defined portfolio. This system is used to calculate historical VaR and ES, parametric VaR and ES, as well as Monte Carlo VaR and ES.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Model description}
+\label{sec:summ:md}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Current/intended model usage}
+\label{sec:summ:mu}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Validation methodology and scope}
+\label{sec:summ:vms}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Critical analysis}
+\label{sec:summ:ca}
+
+Here are the pros and cons of the models we used respectively:
+
+For Historical VaR and ES: 
+\begin{itemize}
+\item Pros: Conceptually easy, use the actual returns, can give the operational and analyzable number, etc
+\item Cons: Assume the history would replicate the future, might not give a good prediction when the time window is too short, hard to choose the optimal time window, can be affected significantly by shock events or stress scenarios, cannot answer a question of what-if, etc.
+\end{itemize}
+
+For Parametric VaR and ES: 
+\begin{itemize}
+\item Pros: Only need to do the calculation of mu and sigma, the data for the input is easy to obtain, etc.
+\item Cons: the assumption of normality might be fatal, still cannot answer the question of what-if.
+\end{itemize}
+
+For Monte Carlo VaR and ES: 
+\begin{itemize}
+\item Pros: Allow for an infinite number of possible scenarios, can answer a question of what-if.
+\item Cons: a way more complex analytical tool, model complexity increase in scale, still need a assumptive distribution. 
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\renewcommand{\clearpage}{}
+\chapter{Introduction}
+\label{chap:intro}
+\endgroup
+This is a review of our group’s project of development of a risk calculation system for a portfolio comprised of stocks and options. In this system we realized the computation and visualization of historical VaR, GBM VaR, as well as VaR using Monte Carlo Simulation. 
+
+The data we obtained for input is the historical Close Price daily for the stocks that user wants to form a portfolio. And our system do a calculation of VaR using historical simulation, parametric method, as well as Monte Carlo simulation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\renewcommand{\clearpage}{}
+\chapter{Product Description}
+\label{chap:pd}
+\endgroup
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\renewcommand{\clearpage}{}
+\chapter{Model Description}
+\label{chap:md}
+\endgroup
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Modeling theory/assumptions}
+\label{sec:md:mt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Mathematical description}
+\label{sec:md:md}
+
+For Historical Simulation model: 
+
+The model is quite intuitive. We assume the future would replicate the past. So if we want to calculate a p level VaR for a predefined window size and horizon, we could calculate the relative return or absolute return of the portfolio and take the $(1-p)^{\text{th}}$ quantile of the return, scale it in accordance to our original investment $S_0$, and take its inverse as our VaR. And take the mean of the $(1-p)^{\text{th}}$ values as ES.
+
+For Parametric model:
+
+We assume the stocks’ price and the portfolio price resemble geometry Brownian motion. And we can calculate the VaR and ES using the following formulas:
+
+\begin{equation}
+dS=\mu Sdt+\sigma SdW
+\end{equation}
+\begin{equation}
+E[S_T]=S_0 e^{\mu T}
+\end{equation}
+\begin{equation}
+Var[S_T]=S_0^2( e^{\sigma^2 T}-1)e^{2\mu T}
+\end{equation}
+\begin{equation}
+VaR(S, T, p)=S_0-S_0 e^{\sigma\sqrt{T}\Phi^{-1}(1-p)+ (\mu-\frac{\sigma^2}{2})T}
+\end{equation}
+\begin{equation}
+ES(S, T, p)=S_0(1-e^{\mu T}/(1-p)\times\Phi(\Phi^{-1}(1-p)-\sqrt{T}\sigma))
+\end{equation}
+
+For Monte Carlo method:
+
+Given the drift and volatility of the portfolio on a certain day, we can simulate the potential movement of the portfolio using Monte Carlo Simulation 
+
+\begin{equation}
+S_T=S_0 e^{(\mu-\frac{\sigma^2}{2})\times \text{horizon days}/252+\sigma W}
+\end{equation}
+
+for say, 10000 times (can be defined by user) and then we can obtain VaR and ES by just sorting the potential losses and take the intended quantile.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Calibration methodology}
+\label{sec:md:cm}
+
+To estimate the drift and volatility, for a user defined window size, we need to calibrate the historical data as follows:
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Model usage}
+\label{sec:md:mu}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Model exposure}
+\label{sec:md:me}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\renewcommand{\clearpage}{}
+\chapter{Validation Methodology and Scope}
+\label{chap:vms}
+\endgroup
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\renewcommand{\clearpage}{}
+\chapter{Validation Results}
+\label{chap:vr}
+\endgroup
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\renewcommand{\clearpage}{}
+\chapter{Conclusions and Recommendations}
+\label{chap:cr}
+\endgroup
+
+
+\appendix
+\renewcommand\theequation{\Alph{chapter}--\arabic{equation}}
+\renewcommand\thefigure{\Alph{chapter}--\arabic{figure}}
+\renewcommand\thetable{\Alph{chapter}--\arabic{table}}
+
+%\include{readme}
+%\include{code}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\backmatter
+
+%\bibliography{ref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
