@@ -95,11 +95,21 @@
         \LARGE{\bf\@title} \\ [2em]
         \Large{\@subtitle} \\ [5em]
 
+        \begin{minipage}[t]{0.49\textwidth}
         \begin{center} \normalsize
-            \textbf{Chen Di, Zhaofeng Shi} \\
-            \textit{cd2904, zs2332} \\
-            \texttt{cd2904@columbia.edu, zs2332@columbia.edu} \\ [3em]
+            \textbf{Chen Di} \\
+            \textit{cd2904} \\
+            \texttt{cd2904@columbia.edu}
         \end{center}
+        \end{minipage}
+        \begin{minipage}[t]{0.49\textwidth}
+        \begin{center} \normalsize
+            \textbf{Zhaofeng Shi} \\
+            \textit{zs2332} \\
+            \texttt{zs2332@columbia.edu}
+        \end{center}
+        \end{minipage}
+
 
         \vfill
         \normalsize{\@date}
