@@ -138,18 +138,18 @@ shinyUI(
             DT::dataTableOutput("excDatatable")
           )
         ),
-        tabItem(tabName = "option", 
-          box(width = NULL, status = "primary", solidHeader = TRUE, 
-            title="VaR Calculation when adding optons into the position", 
+        tabItem(tabName = "option",
           fluidRow(
-            column(width = 4,
-            # fileInput("spd", h4("Stock price data")),
-            fileInput("cvd", h4("Call volatility data")),
-            fileInput("pvd", h4("Put volatility data")),
-            fileInput("impl", h4("Implement")),
-            numericInput("rf", label = h4("Risk free rate"), value = 0.05),
-            numericInput("datenum", label = h4("Date (in numeric)"), value = 2),
-            verbatimTextOutput("optionData"))
+            column(width = 6, 
+              fileInput("cvd", h4("Call volatility data")),
+              fileInput("pvd", h4("Put volatility data")),
+              fileInput("impl", h4("Implement")),
+              numericInput("rf", label = h4("Risk free rate"), value = 0.05),
+              numericInput("datenum", label = h4("Date (in numeric)"), value = 2)
+              ),
+            column(6, 
+              verbatimTextOutput("optionData")
+            )
           )
         )
       )
