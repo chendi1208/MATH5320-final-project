@@ -8,7 +8,7 @@ library(reshape2)
 
 
 # user defined modules
-# source('../model/portfolio.R')
+source('../model/portfolio.R')
 source("../model/cal_measure.R")
 
 
@@ -17,45 +17,45 @@ source("../model/cal_measure.R")
 # server function
 shinyServer(
   function(input, output) {
-    # Datasets
-    ## ptfData
-    # ptfData <- reactive({
-    #   position <- read.csv(input$file$datapath)
-    #   # position <- data.frame(ticker = 'MCD', amount = 100)
-    #   date_range <- c(as.Date(input$dates[1]), as.Date(input$dates[2]))
-    #   prices <- format_prices(stock_prices, position, date_range)
-    
-    #   # handle exception if no available data to form portfolio
-    #   if (nrow(prices) == 0) {
-    #     return(data.frame())
-    #   }
-    
-    #   ptf <- format_portfolio(prices, position, date_range)
-    #   ptf
-    # })
-
     # REACTIVES
     # ptfData: customize csv
     ptfData <- reactive({
-      prices <- read.csv(input$portfolio$datapath)
-      investment <- read.csv(input$investment$datapath)
+      # use choice 1
+      while (input$checkfile) {
+        prices <- read.csv(input$portfolio$datapath)
+        investment <- read.csv(input$investment$datapath)
 
-      prices$Date <- as.Date(prices$Date, "%m/%d/%y")
-      date_range <- c(as.Date(input$dates[1]), as.Date(input$dates[2]))
-      start_date <- date_range[1]
-      end_date <- date_range[2]
-      prices <- prices[(prices$Date >= start_date) & (prices$Date <= end_date), ]
-      init_prices <- prices[dim(prices)[1], ][-1]
+        prices$Date <- as.Date(prices$Date, "%m/%d/%y")
+        date_range <- c(as.Date(input$dates[1]), as.Date(input$dates[2]))
+        start_date <- date_range[1]
+        end_date <- date_range[2]
+        prices <- prices[(prices$Date >= start_date) & (prices$Date <= end_date), ]
+        init_prices <- prices[dim(prices)[1], ][-1]
 
-      shares <- unlist(investment$amount / init_prices)
-      portfolio <- 0
-      for (i in 1:length(shares)) {
-        portfolio <- portfolio + shares[i] * prices[, i+1]
+        shares <- unlist(investment$amount / init_prices)
+        portfolio <- 0
+        for (i in 1:length(shares)) {
+          portfolio <- portfolio + shares[i] * prices[, i+1]
+        }
+        prices$Portfolio <- portfolio
+        prices$Date <- format(prices$Date)
+        return(prices)
       }
-      prices$Portfolio <- portfolio
-      prices$Date <- format(prices$Date)
-      return(prices)
-      })
+      # use choice 2
+      while (input$checkticker) {
+        position <- read.csv(input$tickerfile$datapath)
+        date_range <- c(as.Date(input$dates[1]), as.Date(input$dates[2]))
+        prices <- format_prices(stock_prices, position, date_range)
+      
+        # handle exception if no available data to form portfolio
+        if (nrow(prices) == 0) {
+          return(data.frame())
+        }
+      
+        ptf <- format_portfolio(prices, position, date_range)
+        return(ptf)
+      }
+    })
 
     # caliData: calibration of parametric mu and sigma 
     caliData <- reactive({
@@ -226,7 +226,11 @@ shinyServer(
     output$measDataplot <- renderPlot({
       measData <- measData()
       # remove rows that have all NAs or NULLs
-      measData <- measData[!rowSums(!is.na(measData[,-1])) == 0,]
+      if (dim(measData)[2] > 2) {
+        measData <- measData[!rowSums(!is.na(measData[,-1])) == 0,]
+      } else {
+        measData <- na.omit(measData)
+      }
       measDataplot <- ggplot(melt(measData, 
                   id.vars = "Date"), aes(x = as.Date(Date),
                                          y = value, group = variable)) + 
@@ -242,7 +246,11 @@ shinyServer(
     output$excDataplot1 <- renderPlot({
       comparison <- excData()
       # remove rows that have all NAs
-      comparison <- comparison[!rowSums(!is.na(comparison[,-c(1,2)])) == 0,]
+      if (dim(comparison)[2] > 3) {
+        comparison <- comparison[!rowSums(!is.na(comparison[,-c(1,2)])) == 0,]
+      } else {
+        comparison <- na.omit(comparison)
+      }
 
       excDataplot1 <- ggplot(melt(comparison[,-2], 
                   id.vars = "Date"), aes(x = as.Date(Date),
@@ -259,7 +267,11 @@ shinyServer(
       measData <- measData()[, -1]
       comparison <- cbind.fill(loss, measData, fill = NA)
       # remove rows that have all NAs
-      comparison <- comparison[!rowSums(!is.na(comparison[,-c(1,2)])) == 0,]
+      if (dim(comparison)[2] > 3) {
+        comparison <- comparison[!rowSums(!is.na(comparison[,-c(1,2)])) == 0,]
+      } else {
+        comparison <- na.omit(comparison)
+      }
 
       excDataplot2 <- ggplot(melt(comparison, 
                   id.vars = "Date"), aes(x = as.Date(Date),

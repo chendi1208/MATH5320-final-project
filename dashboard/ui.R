@@ -41,8 +41,16 @@ shinyUI(
               tabBox(width = NULL,
                 tabPanel(h5("Portfolio"),
                   dateRangeInput("dates", start = "1992-09-24", label = h4("Investment period")),
+                  hr(),
+                  checkboxInput("checkfile", 
+                    label = "Choice 1: upload file with close prices and volatility", value = TRUE),
                   fileInput("portfolio", h4("Position input")),
-                  fileInput("investment", h4("Initial investment input"))
+                  fileInput("investment", h4("Initial investment input")),
+                  hr(),
+                  checkboxInput("checkticker", 
+                    label = "Choice 2: upload ticker name (available for stock only portfolio)", 
+                    value = FALSE),
+                  fileInput("tickerfile", h4("Ticker and investment input"))
                 ),
                 tabPanel(h5("Parameters"),
                   sliderInput("windowLen",
@@ -55,13 +63,13 @@ shinyUI(
                   numericInput("text2", 
                     label = h4("Probobility for calculating ES"), value = 0.975),
                   selectInput("measure", "Measure:", 
-                    c("VaR", "ES"), selected = NULL, multiple = TRUE, selectize = TRUE),
+                    c("VaR", "ES"), selected = "VaR", multiple = TRUE, selectize = TRUE),
                   selectInput("method", "Methods:", c(
                     "Parametric - equally weighted", 
                     "Parametric - exponentially weighted",
                     "Historical Simulation", 
                     "Monte Carlo Simulation"), 
-                  selected = NULL, multiple = TRUE, selectize = TRUE),
+                  selected = "Parametric - equally weighted", multiple = TRUE, selectize = TRUE),
                   numericInput("npaths", label = h4("npaths"), value = 300),
                   submitButton("Submit")
                 )
@@ -69,7 +77,21 @@ shinyUI(
             ),
             column(width = 8,
               box(width = NULL, plotOutput("measDataplot",height="500px"), collapsible = TRUE,
-                title = "Plot", status = "primary", solidHeader = TRUE)
+                title = "Plot", status = "primary", solidHeader = TRUE),
+              p("The following", strong("hints"), "may be helpful if you encounter the error message:"),
+              p(span("Error: 'file' must be a character string or connection", style = "color:red"),
+                ": Check if input files are not blank, 
+                and the format is the same as the sample input."),
+              p(span("Error: 'names' attribute [1] must be the same length as the vector [0]", 
+                style = "color:red"),
+                ": The effective investment period must be greater than 0 day, 
+                so change the investment period to see if it works."),
+              p(span("Error: object 'variable' not found", 
+                style = "color:red"),
+                ": Check that method and measure input are not blank."),
+              p(span("No plot output: ", 
+                style = "color:red"),
+                "Check if you have click the ", strong("submit "), "button.")
             )
           )
         ),
