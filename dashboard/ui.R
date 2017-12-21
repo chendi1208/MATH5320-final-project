@@ -27,7 +27,7 @@ shinyUI(
           menuSubItem("Calibration", tabName = "calit", icon = icon("angle-right")),
           menuSubItem("Measure output", tabName = "measuret", icon = icon("angle-right")),
           menuSubItem("Exceptions", tabName = "exct", icon = icon("angle-right"))),
-        menuItem("About", tabName = "about", icon = icon("question"))
+        menuItem("Option adjustment", tabName = "option", icon = icon("lightbulb-o"))
       )
     ),
 
@@ -136,6 +136,20 @@ shinyUI(
           box(width = NULL, status = "primary", solidHeader = TRUE, title="Exceptions Per Year", 
             downloadButton('download_ex', 'Download'), br(), br(),
             DT::dataTableOutput("excDatatable")
+          )
+        ),
+        tabItem(tabName = "option", 
+          box(width = NULL, status = "primary", solidHeader = TRUE, 
+            title="VaR Calculation when adding optons into the position", 
+          fluidRow(
+            column(width = 4,
+            # fileInput("spd", h4("Stock price data")),
+            fileInput("cvd", h4("Call volatility data")),
+            fileInput("pvd", h4("Put volatility data")),
+            fileInput("impl", h4("Implement")),
+            numericInput("rf", label = h4("Risk free rate"), value = 0.05),
+            numericInput("datenum", label = h4("Date (in numeric)"), value = 2),
+            verbatimTextOutput("optionData"))
           )
         )
       )

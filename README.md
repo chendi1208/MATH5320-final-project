@@ -10,7 +10,6 @@ All copyrights reserved by author: [Chen Di](mailto:chen.di@columbia.edu) and Zh
 cal_system/
     |
     |---- dashboard/
-    |        |---- www/
     |        |---- ui.R
     |        |---- server.R
     |---- run_app.R
@@ -25,7 +24,11 @@ cal_system/
     |        |---- portfolio.R
     |
     |---- report/
-    |---- sample_input.csv
+    |        |---- README.md
+    |        |---- main.pdf
+    |---- sample_input_Investment.csv
+    |---- sample_input_Position.csv
+    |---- sample_input_Ticker&Investment.csv
     |---- README.md
 ```
 
@@ -33,7 +36,7 @@ This directory structure only shows directories and files that are necessary to 
 
 ### Run Shiny app
 
-1. The user can use the bash file `run_app.sh` to run the Shiny application automatically (Linux and Unix systems only). Change the path and ensure that `rscript` command is valid (see [here][rscript] for instruction)
+1. The user can use the bash file `run_app.sh` to run the Shiny application automatically (**Linux** and **Unix** systems only). Change the path and ensure that `rscript` command is valid (see [here][rscript] for instruction)
 
 2. Altenatively, the user can go into the directory and source `run_app.R`
 
@@ -51,49 +54,43 @@ This directory structure only shows directories and files that are necessary to 
 
 ### User input
 
-Required input in the app:
+Required input in the app: a separate csv file containing portfolio information with the following format is also required. The user can upload the file through the app.
 
-- Date invested 
-- Date withdrawal (**investment period**) 
-- Measure
-- Methods
+- If you'd like your collected data of portfolio (like those in class assignment):
+  - Historical data of each position in the portfolio
+  - Investment amount for each position
 
-Optional input (change the default value):
+| Date            | ticker_1                 | ticker_2                 | ...  |
+| --------------- | ------------------------ | ------------------------ | ---- |
+| date_1 (newest) | ticker_1 price on date_1 | ticker_2 price on date_1 | ...  |
+| date_2          | ticker_1 price on date_2 | ticker_2 price on date_2 | ...  |
 
-- Window length
-- Horizon
-- Probability for calculating VaR
-- Probability for calculating ES
-- npaths
+| ticker   | amount |
+| -------- | ------ |
+| ticker_1 | xxx.xx |
+| ticker_2 | xxx.xx |
+| ...      | ...    |
 
-A separate csv file containing portfolio information (**stock ticker** and **total dollar amount** invested in) with the following format is also required. The user can upload the file through the app. Tickers that do not have data will be ignored.
+- Alternatively, you can just  enter the ticker name and initial amount,  using the database I contructed. Tickers that do not have data will be ignored.
 
 | ticker   | amount |
 | -------- | ------ |
 | ticker_1 | xxx.xx |
 | ticker_2 | xxx.xx |
 | ticker_3 | xxx.xx |
-| …...     | …...   |
+| ...      | ...    |
 
-### Error message
+Optional input (change the default value):
 
-The following message may due to the improper use of the model, and available solutions are also provided:
+- Date invested 
+- Date withdrawal (**investment period**) 
 
-1. `'names' attribute [1] must be the same length as the vector [0]`
-
-   The effective investment period must be greater than 0 day, so change the **investment period**
-
-2. `object 'variable' not found`
-
-   Check that **method** and **measure** input are not blank
-
-3. `f() values at end points not of opposite sign`
-
-   If "**exponentially** weighted" method is chosen, make sure that window length must be greater than 2 years
-
-4. `'file' must be a character string or connection`
-
-   Check if **file** uploaded is the same format as the sample input
-
+- Window length
+- Horizon
+- Probability for calculating VaR
+- Probability for calculating ES
+- Measure
+- Methods
+- npaths
 
 [rscript]: https://github.com/andrewheiss/SublimeKnitr/issues/32

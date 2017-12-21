@@ -10,6 +10,7 @@ library(reshape2)
 # user defined modules
 source('../model/portfolio.R')
 source("../model/cal_measure.R")
+source("../model/option.R")
 
 # server function
 shinyServer(
@@ -131,6 +132,32 @@ shinyServer(
       comparison
     })
 
+    # option
+    optionData <- reactive({
+      sp <- read.csv(input$portfolio$datapath)
+      cv<- read.csv(input$cvd$datapath,header = T)
+      cv[,2] <- cv[,2]/100
+      pv<- read.csv(input$pvd$datapath,header = T)
+      pv[,2] <- pv[,2]/100
+      impl <- read.csv(input$impl$datapath)
+      ci <- impl$index[1]
+      pindex <- impl$index[2]
+      siv <- c(5000, 5000)
+      civ <- impl$invest[1]
+      piv <- impl$invest[2]
+      cm <- impl$maturity[1]
+      pm <- impl$maturity[2]
+      cs <- impl$strike[1]
+      ps <- impl$strike[2]
+      r <- input$rf
+      w <- input$windowLen
+      ho <- input$horizonDays
+      vp <- input$text1
+      np <- input$npaths
+      da <- input$datenum
+      combined_VaR(sp,cv,pv,ci,pindex,siv,civ,piv,cm,pm,cs,ps,r,da,vp,ho,w,np)
+    })
+    output$optionData <- renderPrint({ optionData() })
     # TABLES & DOWNLOADS
     # ptfData
     output$ptfDatatable <- DT::renderDataTable({
