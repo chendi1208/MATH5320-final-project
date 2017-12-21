@@ -11,9 +11,6 @@ library(reshape2)
 source('../model/portfolio.R')
 source("../model/cal_measure.R")
 
-
-# stock_prices <- get_all_prices()
-
 # server function
 shinyServer(
   function(input, output) {
@@ -21,7 +18,7 @@ shinyServer(
     # ptfData: customize csv
     ptfData <- reactive({
       # use choice 1
-      while (input$checkfile) {
+      if (input$checkfile) {
         prices <- read.csv(input$portfolio$datapath)
         investment <- read.csv(input$investment$datapath)
 
@@ -40,9 +37,10 @@ shinyServer(
         prices$Portfolio <- portfolio
         prices$Date <- format(prices$Date)
         return(prices)
-      }
-      # use choice 2
-      while (input$checkticker) {
+      } 
+      # Warning: speed would be lower
+      else if (input$checkticker) {
+        stock_prices <- get_all_prices()
         position <- read.csv(input$tickerfile$datapath)
         date_range <- c(as.Date(input$dates[1]), as.Date(input$dates[2]))
         prices <- format_prices(stock_prices, position, date_range)
